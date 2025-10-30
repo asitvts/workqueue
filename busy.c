@@ -12,13 +12,16 @@ static struct work_struct my_work;
 
 static void work_func(struct work_struct* work){
 	
-	pr_info("work queue from work.c is performing work, on cpu : %d on thread %s\n", smp_processor_id(), current->comm);
+	pr_info("making sure core 2 stays busy\n");
+	mdelay(15000);
+	pr_info("work queue is performing work, on cpu : %d on thread %s\n", smp_processor_id(), current->comm);
 	return;
 
 }
 
 static int __init my_init(void){
 	
+	pr_info("-------------\n");
 	pr_info("module loaded\n");
 	
 	my_workqueue = create_workqueue("my_work_queue");
@@ -32,22 +35,13 @@ static int __init my_init(void){
 	
 	int ret;
 	
-	pr_info("requesting access of core 2 for work\n");
+	pr_info("queueing work on core 2\n");
 	ret=queue_work_on(2,my_workqueue, &my_work);
 	if(!ret){
-		pr_info("this work is already queued, 1\n");
+		pr_info("this work is already queued\n");
 	}
 	
 
-	/*
-	pr_info("queue_work on processor : %d\n", smp_processor_id());
-	ret=queue_work(my_workqueue, &my_work);
-	if(!ret){
-		pr_info("this work is already queued, 2\n");
-	}
-	*/
-	
-	// both queue_work and queue_work_on return false if the work being queued is already queued
 	return 0;
 }
 

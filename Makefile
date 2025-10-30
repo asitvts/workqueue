@@ -1,6 +1,6 @@
 KDIR ?= /lib/modules/$(shell uname -r)/build
 
-obj-m += work.o
+obj-m += work.o busy.o
 
 all:
 	make -C $(KDIR) M=$(PWD) modules
